@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .models import User, Role
 
+
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
 )
@@ -26,14 +27,14 @@ class LoginAPIView(APIView):
     serializer_class = LoginSerializer
 
     def post(self, request):
-        user = request.data.get('user', {})
-        serializer = self.serializer_class(data=user)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+        #serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UserList(generics.ListCreateAPIView):
-    queryset = User.objects.all()
+    queryset = User.user_manager.all()
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
@@ -44,9 +45,26 @@ class UserList(generics.ListCreateAPIView):
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
-    queryset = User.objects.all()
+    queryset = User.user_manager.all()
     serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
+class RoleList(generics.ListCreateAPIView):
+    queryset = Role.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+class RoleDetail(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Role.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)

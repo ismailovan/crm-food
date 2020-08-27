@@ -9,13 +9,13 @@ class Department(models.Model):
 
 class MealCategory(models.Model):
 	name =  models.CharField(max_length = 255)
-	department_id = models.ForeignKey(Department,on_delete =  models.CASCADE)
+	department = models.ForeignKey(Department,on_delete =  models.CASCADE)
 	def __str__(self):
 		return self.name
 
 class Meal(models.Model):
 	name = models.CharField(max_length = 255)
-	category_id = models.ForeignKey(MealCategory,on_delete =  models.CASCADE)
+	category = models.ForeignKey(MealCategory,on_delete =  models.CASCADE)
 	price = models.IntegerField(max_length = 255)
 	description = models.CharField(max_length = 255)
 	def __str__(self):

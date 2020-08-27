@@ -1,12 +1,12 @@
 from .models import Status, ServicePercentage
 from rest_framework import serializers
 
-class StatusSerializer(models.Model):
+class StatusSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Status
-		fields = ('name')
+		fields = ('id', 'name')
 
-class ServicePercentageSerializer(models.Model):
+class ServicePercentageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ServicePercentage
 		fields = ('percentage')

@@ -1,19 +1,19 @@
-from .modeld import Department, MealCategory, Meal
+from .models import Department, MealCategory, Meal
 from rest_framework import serializers
 
 
-class DepartmentSerializer(models.Model):
+class DepartmentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Department
-		fields = ('name')
+		fields = ('id', 'name')
 
-class MealCategorySerializer(models.Model):
+class MealCategorySerializer(serializers.ModelSerializer):
 	class Meta:
 		model = MealCategory
-		fields = ('name', 'department_id')
+		fields = ('id', 'name', 'department')
 
-class MealSerializer(models.Model):
+class MealSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Meal
-		fields = ('name', 'category_id', 'price', 'description')
+		fields = ('id', 'name', 'category', 'price', 'description')
 

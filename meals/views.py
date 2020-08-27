@@ -3,6 +3,7 @@ from .models import Meal, MealCategory, Department
 from .serializers import MealSerializer, MealCategorySerializer, DepartmentSerializer
 from rest_framework import status
 from rest_framework import generics
+from rest_framework.response import Response
 
 class MealList(generics.ListCreateAPIView):
     queryset = Meal.objects.all()
@@ -16,10 +17,10 @@ class MealList(generics.ListCreateAPIView):
 
 
 class MealDetail(generics.ListCreateAPIView):
-	queryset = Meal.objects.all()
+    queryset = Meal.objects.all()
     serializer_class = MealSerializer
-
-	def get(self, request, *args, **kwargs):
+    
+    def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
@@ -40,17 +41,16 @@ class DepartmentList(generics.ListCreateAPIView):
 
 
 class DepartmentDetail(generics.ListCreateAPIView):
-	queryset = Department.objects.all()
+    queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-
-	def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
 class MealCategoryList(generics.ListCreateAPIView):
-	queryset = MealCategory.objects.all()
+    queryset = MealCategory.objects.all()
     serializer_class = MealCategorySerializer
 
     def get(self, request, *args, **kwargs):
@@ -58,9 +58,10 @@ class MealCategoryList(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+        
 
 class MealCategoryDetail(generics.ListCreateAPIView):
-	queryset = MealCategory.objects.all()
+    queryset = MealCategory.objects.all()
     serializer_class = MealCategorySerializer
 
     def get(self, request, *args, **kwargs):
@@ -68,5 +69,19 @@ class MealCategoryDetail(generics.ListCreateAPIView):
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+class MealCategoriesByDepartment(generics.RetrieveAPIView):
+
+
+    model = Department
+    queryset = Department.objects.all()
+    lookup_field = "pk"
+
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        categories = MealCategory.objects.filter(department = instance.id)
+        serializer = MealCategorySerializer(categories, many = True)
+        return Response(serializer.data)
 
 

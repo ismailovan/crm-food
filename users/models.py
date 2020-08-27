@@ -10,7 +10,7 @@ from django.contrib.auth.models import (
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(self, username, name, surname, email, phone, role_id, password=None):
+    def create_user(self, username, name, surname, email, phone, role, password=None):
      
         if username is None:
             raise TypeError('Users must have a username.')
@@ -30,15 +30,15 @@ class UserManager(BaseUserManager):
         	surname = surname,
         	email=self.normalize_email(email),
             phone = phone,
-            role_id = role_id
+            role = role
             )
         user.set_password(password)
         user.save()
 
         return user
 
-    def create_superuser(self, username, name, surname, email, phone, password, role_id):
-        admin_role = Role.objects.get(pk=role_id)
+    def create_superuser(self, username, name, surname, email, phone, password, role):
+        admin_role = Role.objects.get(pk=role)
 
         if username is None:
         	raise TypeError('Superusers must have a username.')
@@ -51,7 +51,7 @@ class UserManager(BaseUserManager):
         	surname = surname,
         	email = email, 
         	phone = phone,
-        	role_id = admin_role,
+        	role = admin_role,
         	password = password)
 
         user.is_superuser = True
@@ -71,7 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('Username', db_index=True, max_length=255, unique=True)
     name = models.CharField('Name', max_length = 255)
     surname = models.CharField('Surname',max_length = 255)
-    role_id = models.ForeignKey(Role, on_delete = models.CASCADE)
+    role = models.ForeignKey(Role, on_delete = models.CASCADE)
     phone = models.CharField('Phone number', max_length = 255)
     email = models.EmailField('Email', db_index=True, unique=True)
 
@@ -80,10 +80,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_of_add = models.DateTimeField(auto_now_add=True)
     
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['name', 'surname', 'email','phone', 'role_id']
+    REQUIRED_FIELDS = ['name', 'surname', 'email','phone', 'role']
 
     
-    objects = UserManager()
+    user_manager = UserManager()
 
     def __str__(self):
         return self.username
