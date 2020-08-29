@@ -9,5 +9,5 @@ class StatusSerializer(serializers.ModelSerializer):
 class ServicePercentageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ServicePercentage
-		fields = ('percentage')
+		fields = ('percentage', )
 	

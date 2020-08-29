@@ -4,6 +4,36 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate, password_validation
 from .models import User, Role
 
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        max_length=128,
+        min_length=8,
+        write_only=True
+    )
+    role = serializers.PrimaryKeyRelatedField(
+        queryset = Role.objects.all()
+    )
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username','name','surname','phone','role', 'password', )
+        read_only_fields = ('token', )
+
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+
+        for (key, value) in validated_data.items():
+            setattr(instance, key, value)
+
+        if password is not None:
+            instance.set_password(password)
+
+        instance.save()
+
+        return instance
+
+
 
 class RegistrationSerializer(serializers.ModelSerializer):
     role = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all())
@@ -90,31 +120,4 @@ class LoginSerializer(serializers.Serializer):
         }
 
 
-
-class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        max_length=128,
-        min_length=8,
-        write_only=True
-    )
-
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'username','name','surname','phone','role', 'password', )
-
-        read_only_fields = ('token',)
-
-
-    def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
-
-        for (key, value) in validated_data.items():
-            setattr(instance, key, value)
-
-        if password is not None:
-            instance.set_password(password)
-
-        instance.save()
-
-        return instance
 

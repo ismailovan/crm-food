@@ -72,7 +72,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField('Username', db_index=True, max_length=255, unique=True)
     name = models.CharField('Name', max_length = 255)
     surname = models.CharField('Surname',max_length = 255)
-    role = models.ForeignKey(Role, on_delete = models.CASCADE)
+    role = models.ForeignKey(Role, on_delete = models.CASCADE, related_name='role')
     phone = models.CharField('Phone number', max_length = 255)
     email = models.EmailField('Email', db_index=True, unique=True)
 

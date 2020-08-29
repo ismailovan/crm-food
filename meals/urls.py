@@ -8,8 +8,8 @@ urlpatterns = [
     path('meal-categories/<int:pk>/', MealCategoryDetail.as_view()),
     path('departments/', DepartmentList.as_view()),
     path('departments/<int:pk>/', DepartmentDetail.as_view()),
-    path('meals/', DepartmentList.as_view()),
-    path('meals/<int:pk>/', DepartmentDetail.as_view()),
+    path('meals/', MealList.as_view()),
+    path('meals/<int:pk>/', MealDetail.as_view()),
     path('meal-categories-by-department/<int:pk>/', MealCategoriesByDepartment.as_view()),
 
     

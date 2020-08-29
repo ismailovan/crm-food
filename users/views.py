@@ -7,9 +7,7 @@ from rest_framework import generics
 from .models import User, Role
 
 
-from .serializers import (
-    LoginSerializer, RegistrationSerializer, UserSerializer
-)
+from .serializers import *
 
 
 class RegistrationAPIView(APIView):
@@ -53,7 +51,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class RoleList(generics.ListCreateAPIView):
     queryset = Role.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = RoleSerializer
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -63,7 +61,7 @@ class RoleList(generics.ListCreateAPIView):
 
 class RoleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Role.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = RoleSerializer
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)

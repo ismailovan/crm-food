@@ -21,7 +21,7 @@ class MealDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MealSerializer
     
     def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
     	return self.update(request, *args, **kwargs)
@@ -41,10 +41,12 @@ class DepartmentList(generics.ListCreateAPIView):
 
 
 class DepartmentDetail(generics.RetrieveUpdateDestroyAPIView):
+
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+
     def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        return self.retrieve(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
@@ -61,11 +63,12 @@ class MealCategoryList(generics.ListCreateAPIView):
         
 
 class MealCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
+
     queryset = MealCategory.objects.all()
     serializer_class = MealCategorySerializer
 
     def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+        return self.retrieve(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
