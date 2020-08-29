@@ -19,7 +19,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         fields = ['email', 'username','name','surname','phone','role', 'password', 'token']
 
     def create(self, validated_data):
-        user = get_user_model().objects.create(
+        user = get_user_model().user_manager.create(
             username=validated_data['username'],
             email=validated_data['email'],
             phone=validated_data['phone'],
@@ -40,10 +40,19 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.save()
 
         return user'''
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ('id', 'name')
+
+
+
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=255)
+    username = serializers.CharField(max_length=255, write_only=True)
     password = serializers.CharField(max_length=128, write_only=True, style = {'input_type': 'password'})
+   
+    role = serializers.IntegerField(source='role.id', read_only=True)
     token = serializers.CharField(max_length=255, read_only=True)
     
 
@@ -61,6 +70,7 @@ class LoginSerializer(serializers.Serializer):
                 'A password is required to log in.'
             )
 
+
         user = authenticate(request=self.context.get('request'), username=username, password=password)
 
         if not user:
@@ -75,14 +85,10 @@ class LoginSerializer(serializers.Serializer):
 
         
         return {
-            'username': user.username,
+            'role': user.role,
             'token': user.token
         }
 
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Role
-        fields = ('id', 'name')
 
 
 class UserSerializer(serializers.ModelSerializer):

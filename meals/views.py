@@ -16,7 +16,7 @@ class MealList(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
 
 
-class MealDetail(generics.ListCreateAPIView):
+class MealDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Meal.objects.all()
     serializer_class = MealSerializer
     
@@ -40,7 +40,7 @@ class DepartmentList(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
 
 
-class DepartmentDetail(generics.ListCreateAPIView):
+class DepartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     def get(self, request, *args, **kwargs):
@@ -60,7 +60,7 @@ class MealCategoryList(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
         
 
-class MealCategoryDetail(generics.ListCreateAPIView):
+class MealCategoryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = MealCategory.objects.all()
     serializer_class = MealCategorySerializer
 

@@ -62,7 +62,6 @@ class RoleList(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
 
 class RoleDetail(generics.RetrieveUpdateDestroyAPIView):
-
     queryset = Role.objects.all()
     serializer_class = UserSerializer
 
