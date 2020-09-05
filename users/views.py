@@ -5,6 +5,9 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.views import APIView
 from rest_framework import generics
 from .models import User, Role
+from rest_framework.permissions import IsAuthenticated 
+
+from django.contrib.auth import get_user_model
 
 
 from .serializers import *
@@ -65,3 +68,12 @@ class RoleDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
+
+class PasswordChangeView(generics.UpdateAPIView):
+    model = get_user_model()
+    permission_classes = (IsAuthenticated, )
+    serializer_class = PasswordChangeSerializer
+    queryset = User.user_manager.all()
+
+    def get_object(self, queryset=None):
+        return self.request.user

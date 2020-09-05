@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model, authenticate, password_validation
 from .models import User, Role
 
@@ -61,21 +60,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    '''def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
-        user = super().update(instance, validated_data)
-        
-        if password:
-            user.set_password(password)
-        user.save()
-
-        return user'''
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
         fields = ('id', 'name')
-
-
 
 
 class LoginSerializer(serializers.Serializer):
@@ -120,4 +108,24 @@ class LoginSerializer(serializers.Serializer):
         }
 
 
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=128, write_only=True, required=True)
+    new_password = serializers.CharField(max_length=128, write_only=True, required=True)
+    
 
+    def validate(self, data):
+        if not self.context['request'].user.check_password(data.get('old_password')):
+            raise serializers.ValidationError({'old_password': 'Old password is not correct'})
+        return data
+
+    def update(self, instance, validated_data):
+        instance.set_password(validated_data['password'])
+        instance.save()
+        return instance
+
+    def save(self, **kwargs):
+        password = self.validated_data['new_password']
+        user = self.context['request'].user
+        user.set_password(password)
+        user.save()
+        return user
