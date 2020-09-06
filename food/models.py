@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import User
-
+from django.utils import timezone
 # Create your models here.
 
 class Department(models.Model):
@@ -58,9 +58,10 @@ class MealToOrder(models.Model):
         return self.count * self.meal.price
 
 class Check(models.Model):
-    order = models.ForeignKey(Order, related_name="order_id", on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    order = models.ForeignKey(Order, related_name="order", on_delete=models.CASCADE)
+    date = models.DateTimeField(timezone.now())
     servicefee = models.ForeignKey(ServicePercentage, related_name="servicefee", on_delete=models.CASCADE)
+    meal = models.ForeignKey(MealToOrder, on_delete = models.CASCADE)
 
-    def get_sum(self):
-        return self.order_id.get_total_sum() + self.servicefee.percentage
+    def get_total_sum(self):
+        return self.order.get_total_sum() + self.servicefee.percentage

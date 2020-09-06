@@ -58,7 +58,10 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
 
 class CheckSerializer(serializers.ModelSerializer):
-	
+    meal = MealToOrderSerializer(read_only=True)
+    servicefee = ServicePercentageSerializer(read_only=True)
+    total_sum = serializers.IntegerField(source='get_total_sum', read_only=True)
+
     class Meta:
         model = Check
-        fields = "__all__"
+        fields = ('id', 'order', 'date', 'servicefee', 'total_sum', 'meal')
