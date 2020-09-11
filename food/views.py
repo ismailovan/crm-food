@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 # Create your views here.
 
 class MealList(generics.ListCreateAPIView):
@@ -154,27 +155,75 @@ class TableDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class OrderList(generics.ListCreateAPIView):
     queryset = Order.objects.all()
+    model = Order
     serializer_class = OrderSerializer
 
     def get_active_orders(self, *args, **kwargs):
         return Order.objects.filter(is_open=True)
-
+    
+    def perform_create(self, serializer):
+        """Create a new order"""
+        serializer.save(waiter=self.request.user)
 
 class OrderDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    model = Order
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+ 
+class AddMealToOrder(generics.ListCreateAPIView, UpdateModelMixin, RetrieveModelMixin):
+
+    model = Order
+    queryset = Order.objects.all()
+    serializer_class = MealToOrderSerializer
+
+    def delete(self, request, *args, **kwargs):
+
+        instance = self.get_object()
+        instance.remove_meal(request)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs):
+
+        instance = self.get_object()
+        instance.add_meals(request)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
-class OrderMeal(generics.ListCreateAPIView):
+
+
+class MealToOrderList(generics.ListCreateAPIView):
     model = MealToOrder
     serializer_class = MealToOrderSerializer
     permission_classes = (IsAuthenticated,)
     queryset = MealToOrder.objects.all()
 
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+
+
 class CheckList(generics.ListCreateAPIView):
     model = Check
     serializer_class = CheckSerializer
     queryset = Check.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 class CheckDetail(generics.RetrieveUpdateDestroyAPIView):
     model = Check

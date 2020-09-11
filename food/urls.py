@@ -8,7 +8,7 @@ urlpatterns = [
     path('tables/<int:pk>/', TableDetail.as_view()),
     path('orders/', OrderList.as_view()),
     path('orders/<int:pk>/', OrderDetail.as_view(), name='retrieve'),
-    path('mealToOrder/<int:pk>', OrderMeal.as_view()),
+    path('meal-to-order/<int:pk>', MealToOrderList.as_view()),
     path('meal-categories/', MealCategoryList.as_view()),
     path('meal-categories/<int:pk>/', MealCategoryDetail.as_view()),
     path('departments/', DepartmentList.as_view()),
@@ -20,6 +20,6 @@ urlpatterns = [
     path('statuses/<int:pk>/', StatusDetail.as_view()),
     path('service-percentage/', ServicePercentageList.as_view()),
     path('service-percentage/<int:pk>/', ServicePercentageDetail.as_view()),
-    path('check/', CheckList.as_view()),
-    path('check/<int:pk>', CheckDetail.as_view())
+    path('checks/', CheckList.as_view()),
+    path('checks/<int:pk>', CheckDetail.as_view())
 ]

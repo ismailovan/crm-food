@@ -21,10 +21,7 @@ class StatusSerializer(serializers.ModelSerializer):
 		model = Status
 		fields = ('id', 'name')
 
-class ServicePercentageSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = ServicePercentage
-		fields = ('percentage', )
+
 	
 class TableSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -32,36 +29,77 @@ class TableSerializer(serializers.ModelSerializer):
 		fields = ('id', 'name')
 
 class MealToOrderSerializer(serializers.ModelSerializer):
-    meal = serializers.CharField()
-    count = serializers.IntegerField()
-    amount = serializers.IntegerField(read_only=True, source='get_sum')
 
+    meal_id = serializers.PrimaryKeyRelatedField(
+        queryset=Meal.objects.all()
+    )
+
+    name = serializers.CharField(source='meal_id.name', read_only=True)
 
     class Meta:
         model = MealToOrder
-        fields = ('id', 'meal', 'count',  'amount')
+        fields = ("meal_id", "count", "name",)
 
 
 
 class OrderSerializer(serializers.ModelSerializer):
     
-    meal_id = MealToOrderSerializer(many=True)
-    
+    table_id = serializers.PrimaryKeyRelatedField(
+        queryset=Table.objects.all()
+    )
+    table_name = serializers.SerializerMethodField("get_table_name")
+    is_open = serializers.SerializerMethodField("get_is_open")
+    meals = MealToOrderSerializer(many=True)
+
     class Meta:
         model = Order
-        fields = ('id', "table", "waiter", "date", "is_open", "meal_id")
+        fields = (
+                "id",
+                "waiter",
+                "table_id",
+                "table_name",
+                "is_open",
+                "date",
+                "meals",
+        )
+        read_only_fields = ("id", "is_open", "waiter")
+
+    def get_is_open(self, obj):
+        is_open = obj
+
+        if is_open:
+            return 1
+        else:
+            return 0
+
+    def get_table_name(self, obj):
+        table = obj.table_id
+
+        return str(table)
+
     def create(self, validated_data):
-        meals = validated_data.pop('meal_id')
+       
+        meals = validated_data.pop("meals")
         order = Order.objects.create(**validated_data)
-        for meals in meals:
-            MealToOrder.objects.create(**meals, order=order)
+
+        for menu_meal in meals:
+            MealToOrder.objects.create(order=order, **menu_meal)
+
         return order
+class ServicePercentageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServicePercentage
+        fields = ('percentage', )
 
 class CheckSerializer(serializers.ModelSerializer):
-    meal = MealToOrderSerializer(read_only=True)
-    servicefee = ServicePercentageSerializer(read_only=True)
-    total_sum = serializers.IntegerField(source='get_total_sum', read_only=True)
+    meals = MealToOrderSerializer(many=True, source='order.meals', read_only=True)
 
+    servicefee = serializers.PrimaryKeyRelatedField(
+        queryset=ServicePercentage.objects.all()
+    )
+
+    total = serializers.FloatField(source='get_sum', read_only=True)
     class Meta:
         model = Check
-        fields = ('id', 'order', 'date', 'servicefee', 'total_sum', 'meal')
+        fields = ('id', 'order', 'date', 'servicefee', 'total', 'meals')
+        read_only_fields = ( "date", "servicefee", 'menu_meal')
